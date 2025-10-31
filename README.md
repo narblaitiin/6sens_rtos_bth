@@ -10,7 +10,10 @@ Storing values ​​in internal memory is, in this example, the way to test the
 
 This is also an opportunity to test interrupt management in the Zephyr environment.
 
-This allows us to test SHT31 ennvironmental sensor and the internal ADC of the MDBT50Q. The final goal will be to send the samples to a lorawan server aevery 15 minutes. The 
+This allows us to test SHT31 environmental sensor and the internal ADC of the MDBT50Q. The final goal will be to send the samples to a lorawan server every 15 minutes.
+
+## Board used
+Original MDBT50Q board, powered by battery/solar panel. (see 6sens_project_nrf52 repository/hardware part, for more information.)
 
 ## Building and Running
 The following commands clean build folder, build and flash the sample:
