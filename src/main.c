@@ -13,24 +13,24 @@
 //  ========== interrupt sub-routine =======================================================
 void sens_work_handler(struct k_work *work_rtc)
 {
-	// retrieve the sensor device using the device tree API
-	const struct device *sht31_dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
-	if (!device_is_ready(sht31_dev)) {
-        printk("%s: sensor device not ready\n", sht31_dev->name);
-        return -ENODEV;
-    }
+	// // retrieve the sensor device using the device tree API
+	// const struct device *sht31_dev = DEVICE_DT_GET_ONE(sensirion_sht3xd);
+	// if (!device_is_ready(sht31_dev)) {
+    //     printk("%s: sensor device not ready\n", sht31_dev->name);
+    //     return -ENODEV;
+    // }
 	
-	printk("two sensors test and W/R flash memory test\n");
- 	int8_t ret = app_flash_handler(sht31_dev);
-	if (ret != 1) {
-		printk("failed to call sensor handler");
-		return 0;
-	}
+	// printk("two sensors test and W/R flash memory test\n");
+ 	// int8_t ret = app_flash_handler(sht31_dev);
+	// if (ret != 1) {
+	// 	printk("failed to call sensor handler");
+	// 	return 0;
+	// }
 
 	// printk("only the two sensors test: ADC & SHT31\n");
 
-	// int16_t bat = app_nrf52_get_vbat();
-	// printk("battery level (int16): %d%%\n", bat);
+	int16_t bat = app_nrf52_get_vbat();
+	printk("battery level (int16): %d%%\n", bat);
 
 	// int16_t temp = app_sht31_get_temp(sht31_dev);
 	// printk("SHT31 temperature (int16): %d\n", temp);
@@ -70,6 +70,6 @@ int main(void)
 	printk("Sensor SHT31 and Battery Example\n");
 
 	// start the timer to trigger the interrupt subroutine every 30 seconds
-	k_timer_start(&sens_timer, K_NO_WAIT, K_SECONDS(30));
+	k_timer_start(&sens_timer, K_NO_WAIT, K_SECONDS(120));
 	return 0;
 }
