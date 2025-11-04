@@ -65,29 +65,17 @@ int16_t app_nrf52_get_vbat()
 
     // convert raw ADC reading to voltage
     int32_t v_adc = (buf * ADC_FULL_SCALE_MV) / ADC_RESOLUTION;
-    printk("convert voltage: %d mV\n", v_adc);
+    printk("convert voltage AIN1: %d mV\n", v_adc);
 
     // scale back to actual battery voltage using voltage divider
     int32_t v_bat = (v_adc * DIVIDER_RATIO_NUM) / DIVIDER_RATIO_DEN;
+    printk("convert voltage BATT: %d mv\n", v_bat);
 
-    // clamp voltage within battery range
-    if (v_bat > BATTERY_MAX_VOLTAGE) v_bat = BATTERY_MAX_VOLTAGE;
-    if (v_bat < BATTERY_MIN_VOLTAGE) v_bat = BATTERY_MIN_VOLTAGE + 1;
-    printk("clamped voltage: %d mV\n", v_bat);
+    // simple linear mapping
+    float percent_f = 100.0f * (v_bat - BATTERY_MIN_VOLTAGE) / (BATTERY_MAX_VOLTAGE - BATTERY_MIN_VOLTAGE);
+    if (percent_f < 0.0f) percent_f = 0.0f;
+    if (percent_f > 100.0f) percent_f = 100.0f;
 
-    // non-linear scaling
-    int32_t range = BATTERY_MAX_VOLTAGE - BATTERY_MIN_VOLTAGE;
-    int32_t difference = v_bat - BATTERY_MIN_VOLTAGE;
-
-    if (range > 0 && difference > 0) {
-        double normalized = (double)difference / range;  // normalize to range [0, 1]
-        double scaled = pow(normalized, 1.2);            // apply non-linear scaling
-        percent = (int16_t)(scaled * 100);               // convert to percentage
-    } else {
-        printk("invalid range or difference\n");
-        percent = 0;
-    }
-
-    printk("battery level (non-linear, int16): %d%%\n", percent);
+    percent = (int16_t)percent_f;
     return percent;
 }

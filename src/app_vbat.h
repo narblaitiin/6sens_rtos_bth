@@ -27,11 +27,10 @@
 // voltage divider correction
 #define DIVIDER_RATIO_NUM           4600    // (R4 + R5)
 #define DIVIDER_RATIO_DEN           3600    // R5
-#define DIVIDER_CORRECTION          ((DIVIDER_RATIO_NUM * 1000) / DIVIDER_RATIO_DEN) // ≈1280
 
 // battery thresholds (in mV, actual battery voltage!)
-#define BATTERY_MAX_VOLTAGE         2980
-#define BATTERY_MIN_VOLTAGE         2270
+#define BATTERY_MAX_VOLTAGE         3700
+#define BATTERY_MIN_VOLTAGE         3000
 
 //  ========== prototypes ==================================================================
 int8_t app_nrf52_vbat_init();
