@@ -30,6 +30,6 @@
 
 //  ========== prototypes ==================================================================
 int8_t app_adc_init();
-int16_t app_get_vbat();
+int16_t app_adc_get_bat();
 
 #endif /* APP_VBAT_H */

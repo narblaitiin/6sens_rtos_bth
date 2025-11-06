@@ -70,7 +70,7 @@ int8_t app_adc_init()
 }
 
 //  ======== app_nrf52_get_vbat ============================================================
-int16_t app_get_vbat()
+int16_t app_adc_get_bat()
 {
     int16_t percent = 0;
 

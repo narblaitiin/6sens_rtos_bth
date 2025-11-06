@@ -29,16 +29,16 @@ void sens_work_handler(struct k_work *work_rtc)
 
 	// printk("only the two sensors test: ADC & SHT31\n");
 
-	int16_t bat = app_get_vbat();
+	int16_t bat = app_adc_get_bat();
 	printk("battery level (int16): %d%%\n", bat);
 
-	int16_t temp = app_get_temp(sht31_dev);
+	int16_t temp = app_sht_get_temp(sht31_dev);
 	printk("SHT31 temperature (int16): %d\n", temp);
 
 	// small delay  between reading the temperature and humidity values
 	k_msleep(5000);
 
-	int16_t hum = app_get_hum(sht31_dev);
+	int16_t hum = app_sht_get_hum(sht31_dev);
 	printk("SHT31 humidity (int16): %d\n", hum);
 }
 K_WORK_DEFINE(sens_work, sens_work_handler);

@@ -109,16 +109,16 @@ int8_t app_flash_handler(const struct device *dev)
 
 	// collect sensor data until the maximum number of records is reached
 	// measure and store the battery voltage
-	data.vbat = app_nrf52_get_vbat();
+	data.vbat = app_adc_get_bat();
 
 	// measure and store the temperature using the SHT31 sensor
-	data.temp = app_sht31_get_temp(dev);
+	data.temp = app_sht_get_temp(dev);
 
 	// small delay  between reading the temperature and humidity values
 	k_msleep(5000);		
 
 	// measure and store the humidity using the SHT31 sensor
-	data.hum = app_sht31_get_hum(dev);
+	data.hum = app_sht_get_hum(dev);
 
 	// save the collected sensor data into the flash memory
 	int8_t ret = app_flash_store(&data);
