@@ -23,8 +23,27 @@ static struct adc_sequence sequence = {
 	.buffer_size = sizeof(buf),
 };
 
+// nonlinear mapping via lookup table
+// source: https://www.jackery.com/blogs/knowledge/battery-voltage-chart
+static const struct {
+        float voltage;
+        uint8_t percent;
+} soc_table[] = {
+    {4.20f, 100},
+    {4.05f,  90},
+    {3.95f,  80},
+    {3.85f,  70},
+    {3.80f,  60},
+    {3.75f,  50},
+    {3.70f,  40},
+    {3.65f,  30},
+    {3.55f,  20},
+    {3.40f,  10},
+    {3.00f,   0}
+};
+
 //  ========== app_nrf52_vbat_init =========================================================
-int8_t app_nrf52_vbat_init()
+int8_t app_adc_init()
 {
     int8_t ret;
 
@@ -51,7 +70,7 @@ int8_t app_nrf52_vbat_init()
 }
 
 //  ======== app_nrf52_get_vbat ============================================================
-int16_t app_nrf52_get_vbat()
+int16_t app_get_vbat()
 {
     int16_t percent = 0;
 
@@ -71,11 +90,29 @@ int16_t app_nrf52_get_vbat()
     int32_t v_bat = (v_adc * DIVIDER_RATIO_NUM) / DIVIDER_RATIO_DEN;
     printk("convert voltage BATT: %d mv\n", v_bat);
 
-    // simple linear mapping
-    float percent_f = 100.0f * (v_bat - BATTERY_MIN_VOLTAGE) / (BATTERY_MAX_VOLTAGE - BATTERY_MIN_VOLTAGE);
-    if (percent_f < 0.0f) percent_f = 0.0f;
-    if (percent_f > 100.0f) percent_f = 100.0f;
+    // convert to volts
+    float vbat = v_bat / 1000.0f;  
 
-    percent = (int16_t)percent_f;
+    // convert to volts for lookup
+    uint8_t soc = 0;
+    if (vbat >= soc_table[0].voltage) {
+        soc = 100;
+    } else if (vbat <= soc_table[sizeof(soc_table)/sizeof(soc_table[0]) - 1].voltage) {
+        soc = 0;
+    } else {
+        for (int i = 0; i < (int)(sizeof(soc_table)/sizeof(soc_table[0]) - 1); i++) {
+            float v1 = soc_table[i].voltage;
+            float v2 = soc_table[i+1].voltage;
+            if (vbat <= v1 && vbat >= v2) {
+                float p1 = soc_table[i].percent;
+                float p2 = soc_table[i+1].percent;
+                soc = (uint8_t)(p1 + (vbat - v1)*(p2 - p1)/(v2 - v1));
+                break;
+            }
+        }
+    }
+
+    percent = soc;
+    printk("battery level: %d %%\n", percent);
     return percent;
 }

@@ -29,16 +29,16 @@ void sens_work_handler(struct k_work *work_rtc)
 
 	// printk("only the two sensors test: ADC & SHT31\n");
 
-	int16_t bat = app_nrf52_get_vbat();
+	int16_t bat = app_get_vbat();
 	printk("battery level (int16): %d%%\n", bat);
 
-	int16_t temp = app_sht31_get_temp(sht31_dev);
+	int16_t temp = app_get_temp(sht31_dev);
 	printk("SHT31 temperature (int16): %d\n", temp);
 
 	// small delay  between reading the temperature and humidity values
 	k_msleep(5000);
 
-	int16_t hum = app_sht31_get_hum(sht31_dev);
+	int16_t hum = app_get_hum(sht31_dev);
 	printk("SHT31 humidity (int16): %d\n", hum);
 }
 K_WORK_DEFINE(sens_work, sens_work_handler);
@@ -54,7 +54,7 @@ int main(void)
 {
 
 	// initialize ADC device
-	int8_t ret = app_nrf52_vbat_init();
+	int8_t ret = app_adc_init();
 	if (ret != 1) {
 		printk("failed to initialize ADC device\n");
 		return 0;
@@ -70,6 +70,6 @@ int main(void)
 	printk("Sensor SHT31 and Battery Example\n");
 
 	// start the timer to trigger the interrupt subroutine every 30 seconds
-	k_timer_start(&sens_timer, K_NO_WAIT, K_SECONDS(120));
+	k_timer_start(&sens_timer, K_NO_WAIT, K_SECONDS(20));
 	return 0;
 }
