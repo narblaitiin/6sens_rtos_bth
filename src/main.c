@@ -52,7 +52,6 @@ K_TIMER_DEFINE(sens_timer, sens_timer_handler, NULL);
 //  ========== main ========================================================================
 int main(void)
 {
-
 	// initialize ADC device
 	int8_t ret = app_adc_init();
 	if (ret != 1) {

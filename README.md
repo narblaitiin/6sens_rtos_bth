@@ -15,7 +15,7 @@ This allows us to test SHT31 environmental sensor and the internal ADC of the MD
 The version of Zephyr RTOS used is the version v4.0.0.
 
 ## Board used
-Original MDBT50Q board, powered by battery/solar panel. (see 6sens_project_nrf52 repository/hardware part, for more information.)
+Original MDBT50Q board, powered by battery/solar panel. (see 6sens_project repository/hardware part, for more information.)
 
 ## Building and Running
 The following commands clean build folder, build and flash the sample:
