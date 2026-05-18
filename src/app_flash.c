@@ -20,7 +20,7 @@ struct flash_header {
 int8_t app_flash_init()
 {
 	const struct flash_area *fa;
-	int8_t  ret = flash_area_open(FIXED_PARTITION_ID(storage_partition), &fa);
+	int8_t  ret = flash_area_open(FIXED_PARTITION_ID(log_storage), &fa);
 	if (ret != 0) {
     	printk("Failed to open flash area\n");
     	return -1;
@@ -50,7 +50,7 @@ int8_t app_flash_init()
 int8_t app_flash_store(const struct vth *data)
 {
     const struct flash_area *fa;
-    int8_t ret = flash_area_open(FIXED_PARTITION_ID(storage_partition), &fa);
+    int8_t ret = flash_area_open(FIXED_PARTITION_ID(log_storage), &fa);
     if (ret != 0) {
         printk("failed to open flash area\n");
         return -1;
@@ -83,7 +83,7 @@ int8_t app_flash_store(const struct vth *data)
         flash_area_close(fa);
         return -1;
     }
-
+	
     // update head
     head = (head + 1) % MAX_RECORDS;
     flash_area_write(fa, 0, &head, sizeof(head));
@@ -93,6 +93,38 @@ int8_t app_flash_store(const struct vth *data)
 		return -1;
 	}
     flash_area_close(fa);
+
+	    // write record
+    ret = flash_area_write(fa, data_offset, data, RECORD_SIZE);
+    if (ret != 0) {
+        printk("write failed at offset 0x%x\n", (uint32_t)data_offset);
+        flash_area_close(fa);
+        return -1;
+    }
+
+    // ================= READ BACK =================
+    struct vth verify_data;
+
+    ret = flash_area_read(fa, data_offset,
+                          &verify_data,
+                          RECORD_SIZE);
+
+    if (ret != 0) {
+        printk("read failed\n");
+        flash_area_close(fa);
+        return -1;
+    }
+
+    printk("WRITE : temp=%d hum=%d vbat=%d\n",
+           data->temp,
+           data->hum,
+           data->vbat);
+
+    printk("READ  : temp=%d hum=%d vbat=%d\n",
+           verify_data.temp,
+           verify_data.hum,
+           verify_data.vbat);
+
     return 0;
 }
 
